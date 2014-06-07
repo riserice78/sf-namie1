@@ -1,0 +1,14 @@
+<apex:page showHeader="false" standardStylesheets="false">
+<apex:stylesheet value="{!$Page.Main_css}"/>
+<apex:stylesheet value="{!$Page.JobOpenings_css}"/>
+<apex:stylesheet value="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css"/>
+<apex:include pageName="JobOpenings_js"/>
+<apex:include pageName="Util_js"/>
+
+<div id="mainContainer">
+    <div class="message"></div>
+    <div id="jobOpeningsList" class="listContainer">
+    </div>
+</div>
+
+</apex:page>

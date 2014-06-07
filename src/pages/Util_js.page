@@ -1,0 +1,33 @@
+<apex:page showHeader="false" standardStylesheets="false">
+<script>
+    function createMessage($elem, message, callback){
+        $elem.find('.message').text(message).fadeIn().delay(500).fadeOut(function(){
+            if(callback) callback($elem);        
+        });
+    }
+
+    function formatDate(toFormat){
+        var day = toFormat.getDate();
+        var month = toFormat.getMonth()+1;
+        
+        return toFormat.getFullYear() + '-' 
+            + (month<=9 ? '0'+month : month) + '-' 
+            + (day<=9 ? '0'+day : day);
+    }
+
+    function normalizeDate(toNormalize){
+        toNormalize = new Date(toNormalize);
+        toNormalize = new Date(toNormalize - toNormalize.getTimezoneOffset() * 60000 );
+        var day = toNormalize.getDate();
+        var month = toNormalize.getMonth()+1;
+        var hour = toNormalize.getHours();
+        var minute = toNormalize.getMinutes();
+        
+        return toNormalize.getFullYear() + '/' 
+            + (month<=9 ? '0'+month : month) + '/' 
+            + (day<=9 ? '0'+day : day) + ' ' 
+            + (hour<=9 ? '0'+hour : hour) + ':' 
+            + (minute<=9 ? '0'+minute : minute);
+    }
+</script>
+</apex:page>

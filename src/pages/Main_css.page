@@ -1,0 +1,174 @@
+<apex:page contentType="text/css" standardStylesheets="false">
+    body {
+         height:100%;
+         margin: 0;
+         padding: 0;
+         font-size:100%;
+    }
+    .fa{
+        margin-right: 10px;
+    }
+    .clear{
+        clear: both;
+    }
+    .hide{
+        display: none;    
+    }
+    input, textarea{
+        padding: 5px 1%;
+        font-size: 1em;    
+    }
+    .message{
+        color: red;
+        margin-top: 20px;
+        display: none;
+        font-weight: bold;
+    }
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        z-index: 10;
+        background-color: rgba(0,0,0,0.5);
+    }
+    .overlay .dialog {
+         width: 60%;
+         margin: 100px auto;
+         background-color: #eee;
+         border-radius: 4px;
+         box-shadow: 0 0 5px rgba(0,0,0,0.9);
+    }
+    .overlay .title {
+        display: block;
+        background: #084387;
+        color: white;
+        padding: 5px 2%;
+        font-size: 1.1em;
+        margin: 0;
+    }
+    .overlay .contents {
+        padding: 10px 3%;
+        display: block;
+        font-size: 0.9em;
+        line-height: 2em;
+    }
+    .overlay .contents label{
+        margin-right: 2%;
+    }
+    .overlay .title .closeDialog{
+        float: right;
+        color: white;
+        display: block;
+        cursor: pointer;
+        background: #444;
+        padding: 10px 10px;
+        margin-right: -2%;
+        margin-top: -5px;
+        padding-bottom: 10px;
+    }
+    .comment{
+        width: 98%;
+        height: 100px;
+    }
+    .sendButton{
+        background: #2d9b27;
+        color: white;
+        margin-top: 20px;
+        padding: 5px;
+        display: block;
+        text-align: center;
+        font-size: 1.1em;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 2px #078600;
+    }
+    .sendButton i{
+        margin-right: 10px;
+    }
+    .markerContent .locationName{
+        font-weight: bold;
+        font-size: 15px;
+    }
+    .markerContent i{
+        margin-right: 10px;
+    }
+    .componentContainer{
+        background: #EDF5FE;
+        margin-bottom: 40px;
+        margin-top: 20px;
+        border: 1px solid #ccc;
+    }
+    .componentContainer .title{
+        display: block;
+        padding: 10px 1%;
+        background: #fff;
+        margin: 0;
+        font-size: 1em;
+        color: #333;
+    }
+    .componentContainer .contents{
+        float: left;
+        width: 68%;
+        padding: 10px 1%;
+    }
+    .componentContainer .actions{
+        float: right;
+        width: 28%;
+        padding: 0 1%;
+    }
+    .componentContainer .actionButton{
+        display: block;
+        width: 90%;
+        padding: 10px 5%;
+        text-align: center;
+        margin: 10px 0;
+        font-weight: bold;
+        font-size: 0.9em;    
+    }
+    .componentContainer .detailLine{
+        display: block;
+        border-bottom: 1px solid transparent;
+        background: white;
+        margin-bottom: 5px;
+    }
+
+    .componentContainer .detailLine:after {
+         visibility: hidden;
+         display: block;
+         font-size: 0;
+         content: " ";
+         clear: both;
+         height: 0;
+     }
+    .componentContainer .detailLine label, .componentContainer .detailLine .value{
+        padding: 10px 1%;
+        display: block;
+        float: left;
+        font-size: 0.9em;
+    }
+    .componentContainer .detailLine label{
+        width: 18%;
+        color: #555;
+        background: #fff;
+    }
+    .componentContainer .detailLine .value{
+        width: 78%;
+    }
+    .componentContainer .contents img{
+        width: 9%;
+        float: left;
+        margin-right: 1%;
+    }
+    .componentContainer .contents .detailBlock{    
+        width: 90%;
+        float: right;
+    }
+    .componentContainer .detailBlock .detailLine label{
+        width: 28%;
+    }
+    .componentContainer .detailBlock .detailLine .value{
+        width: 68%;
+    }
+</apex:page>

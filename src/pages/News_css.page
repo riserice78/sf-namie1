@@ -1,0 +1,18 @@
+<apex:page contentType="text/css" standardStylesheets="false">
+    #mainContainer{
+        width: 90%;
+        margin: 0 auto;
+    }
+    .newsBlock{
+        border-top: 4px solid #009999;
+    }
+    .componentContainer .detailLine{
+        line-height: 1.5em;
+        background: transparent;
+    }
+    .viewNews{
+        background: #33cccc;
+        box-shadow: 0 2px #1d7373;
+        color: #333;
+    }
+</apex:page>

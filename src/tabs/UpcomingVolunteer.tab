@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>今後のボランティア活動</label>
+    <mobileReady>false</mobileReady>
+    <motif>Custom58: 使者の杖</motif>
+    <page>UpcomingVolunteerList</page>
+</CustomTab>

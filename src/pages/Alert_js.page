@@ -1,0 +1,204 @@
+<apex:page controller="AlertController" showHeader="false" standardStylesheets="false">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="//maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"></script>
+<script src="//maps.google.com/maps/api/js?sensor=true&libraries=geometry"></script>
+
+<script>
+    var evacuationMap;
+    var MESSAGE_PROBLEM = '問題が発生しました。もう一度送信してください。';
+    function createAlertBlock(obj){
+        return '<div class="alertBlock componentContainer" data-id="' + obj.Id + '">'
+                + '<h1 class="modifiedDate title"><i class="fa fa-bell"></i>アラート日時：' + normalizeDate(obj.LastModifiedDate) + '</h1>'
+                + '<div class="alertDetails contents">'
+                    + '<span class="description">' + obj.Description__c + '</span>'
+                + '</div>'
+                + '<div class="alertActions actions">'
+                    + '<span class="showHelpDialog helpButton actionButton">HELP</span>'
+                    + '<span class="showSafeDialog safetyButton actionButton"><i class="fa fa-check"></i>安否確認を送信</span>'
+                + '</div>'
+                + '<div class="clear"></div>'
+            + '</div>';
+    }
+
+    function initAlertList() {
+        Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.AlertController.getAlertList}', 
+            function(result, event){
+                if (event.status) {
+                    var appendString = '';
+                    $.each(result, function(){
+                            appendString = appendString + createAlertBlock(this);
+                    }); 
+                    $('#alertList').append(appendString);
+                    initAlertActionListeners();
+                }else{
+                    createMessage($('#mainContainer'), event.Message);
+                }
+            }, {escape: true}
+        );
+    }
+
+    function initAlertActionListeners(){
+        $('.showHelpDialog').on('click', function(){
+            console.log('clicked');
+            $('#helpDialog').removeClass('hide');
+            $('.sendHelp').attr('data-eventId', $(this).closest('.alertBlock').attr('data-id'));
+        });
+        $('.showSafeDialog').on('click', function(){
+            $('#safeDialog').removeClass('hide');
+            $('.sendSafety').attr('data-eventId', $(this).closest('.alertBlock').attr('data-id'));
+        });
+    }
+    function initDialogListeners(){
+        $('.closeDialog').on('click', function(){
+            $(this).closest('.overlay').addClass('hide');
+        });
+        $('.sendHelp').on('click', function(){
+            sendHelpNotice({
+                IsHelp__c: true,
+                Comment__c: $(this).siblings('.comment').val(),
+                User__c: "{!$User.Id}",
+                Alert__c: $(this).attr('data-eventId'),
+                CurrentGeolocation__Latitude__s: parseFloat($('#currentLatitude').val()),
+                CurrentGeolocation__Longitude__s: parseFloat($('#currentLongitude').val()),
+                NumberOfPeopleInNeed__c: parseInt($(this).siblings('.numOfPeople').val())
+            });
+        });
+        $('.sendSafety').on('click', function(){
+            sendSafetyNotice({
+                IsHelp__c: false,
+                Comment__c: $(this).siblings('.comment').val(),
+                User__c: "{!$User.Id}",
+                Alert__c: $(this).attr('data-eventId'),
+                CurrentGeolocation__Latitude__s: parseFloat($('#currentLatitude').val()),
+                CurrentGeolocation__Longitude__s: parseFloat($('#currentLongitude').val())
+            });
+        });
+    }
+
+    function sendHelpNotice(obj){
+        Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.AlertController.sendHelpNotice}', obj,
+            function(result, event){
+                if (event.status) {
+                    if(result){
+                        createMessage($('#helpDialog'), '救助連絡を送信しました。', function($elem){
+                            $elem.addClass('hide');
+                        });
+                    }else{
+                        createMessage($('#helpDialog'), MESSAGE_PROBLEM);                    
+                    }
+                }else{
+                    createMessage($('#helpDialog'), event.Message);
+                }
+            }, {escape: true}
+        );    
+    }
+    function sendSafetyNotice(obj){
+        Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.AlertController.sendSafetyNotice}', obj,
+            function(result, event){
+                if (event.status) {
+                    if(result){
+                        createMessage($('#safeDialog'), '安否の連絡を送信しました。', function($elem){
+                            $elem.addClass('hide');
+                        });
+                    }else{
+                        createMessage($('#safeDialog'), MESSAGE_PROBLEM);                    
+                    }
+                }else{
+                    createMessage($('#safeDialog'), event.Message);
+                }
+            }, {escape: true}
+        );    
+    }
+
+    /** Map-related **/
+    function showCurrentPosition(position){
+        var currentLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+        $('#currentLatitude').val(position.coords.latitude);
+        $('#currentLongitude').val(position.coords.longitude);
+                
+        var marker = new google.maps.Marker({
+            map: evacuationMap,
+            position: currentLocation,
+            title: '現在地'
+        });
+        evacuationMap.setCenter(currentLocation);
+    }
+    function onError(){
+    
+    }
+
+    function showEvacuationCenters(locations){
+        var infowindow = new google.maps.InfoWindow;
+        var marker, i;
+        var image = 'https://cdn1.iconfinder.com/data/icons/professional-toolbar-icons-png/32/Run.png';
+        for (i = 0; i < locations.length; i++) { 
+            marker = new google.maps.Marker({
+                position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+                map: evacuationMap,
+                icon: image
+            });
+            google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                 return function() {
+                     infowindow.setContent(locations[i][0]);
+                     infowindow.open(evacuationMap, marker);
+                 }
+            })(marker, i));
+        }
+    }
+
+    function createMarkerContent(obj){
+        return '<div class="markerContent">'
+                + '<div class="locationName" data-id="' + obj.Id + '">' + obj.Name + '</div>'
+                + '<div class="description">' + obj.ShortDescription__c + '</div>'
+                + '<div class="type"><i class="fa fa-university"></i>' + obj.Type__c + '</div>'
+                + '<div class="phone"><i class="fa fa-phone-square"></i>' + obj.Phone__c+ '</div>'
+                + '<a href="comgooglemaps://?center=' + obj.Geolocation__Latitude__s + ',' + obj.Geolocation__Longitude__s +'">マップで表示</a>'
+            + '</div>';
+    }
+    
+    function getEvacuationCenters(callback){
+        Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.AlertController.getEvacuationList}', 
+            function(result, event){
+                if (event.status) {
+                    var locations = [];
+                    $.each(result, function(){
+                        locations.push([createMarkerContent(this), this.Geolocation__Latitude__s, this.Geolocation__Longitude__s]);
+                    });
+                    if(callback) callback (locations);
+                }else{
+                    createMessage($('#mainContainer'), event.Message);
+                }
+            }, {escape: true}
+        );
+    }
+
+
+    function initializeEvacuationMap(){
+        var mapOptions = {
+            zoom: 15,
+            center: new google.maps.LatLng(0, 0),
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        evacuationMap = new google.maps.Map(document.getElementById('evacuationMap'), mapOptions);    
+
+        //show evacuation centers
+        getEvacuationCenters(function(locations){
+            showEvacuationCenters(locations);
+        });
+
+        //show current position, set center to current position
+        if(navigator.geolocation){
+            console.log('navigator.geolocation ok ');
+            navigator.geolocation.getCurrentPosition(showCurrentPosition, onError);
+        }else{ console.log('Geolocation is not supported by this browser.'); }    
+    }
+
+
+    $(document).ready(function(){
+        google.maps.event.addDomListener(window, 'load', initializeEvacuationMap);
+        initAlertList();
+        initDialogListeners();
+    });
+</script>
+
+</apex:page>

@@ -1,0 +1,39 @@
+<apex:page contentType="text/css" >
+    .alertContainer{
+        float: left;
+        width: 48%;    
+        margin: 0 1%;
+        min-height: 400px;
+    }
+    .alertContainer .title{
+        background: #fff;
+        color: #222;
+        font-weight: bolder;
+        border-top: 5px solid #a60000;
+    }
+    .alertContainer .title i{
+        color: #bf3030;
+    }
+    .mapContainer{
+        float: right;
+        background: pink;
+        margin: 0 1%;
+        width: 48%;
+        min-height: 400px;
+    }
+
+    .helpButton{
+        background: #ff4040;
+        box-shadow: 0 2px #a60000;
+        color: #eee;
+    }
+    .safetyButton{
+        background: #009999;
+        box-shadow: 0 2px #006363;
+        color: #eee;
+    }
+    #evacuationMap{
+        width: 490px;
+        height: 700px;
+    }
+</apex:page>

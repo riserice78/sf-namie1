@@ -1,0 +1,69 @@
+<apex:page contentType="text/css" standardStylesheets="false">
+    #mainContainer{
+        width: 90%;
+        margin: 0 auto;
+    }
+    .volunteerBlock {
+        border-top: 4px solid #779e00;
+    }
+    .componentContainer .detailLine label{
+
+    }
+    .componentContainer .detailLine .value{
+        background: #EEFDC4;
+    }
+    .joinVolunteer{
+        background: #cbf93e;
+        box-shadow: 0 2px #779e00;
+        color: #333;
+    }
+    .viewVolunteer{
+        background: #94b62d;
+        box-shadow: 0 2px #779e00;
+        color: #eee;
+    }
+    .barCol{
+        background: #eee;
+        width: 100%;
+        display: block;
+    }
+    .barValue{
+        display: block;
+        min-height: 25px;
+        background: #fceabb; /* Old browsers */
+        background: -moz-linear-gradient(top,  #fceabb 0%, #fccd4d 50%, #f8b500 51%, #fbdf93 100%); /* FF3.6+ */
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fceabb), color-stop(50%,#fccd4d), color-stop(51%,#f8b500), color-stop(100%,#fbdf93)); /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(top,  #fceabb 0%,#fccd4d 50%,#f8b500 51%,#fbdf93 100%); /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(top,  #fceabb 0%,#fccd4d 50%,#f8b500 51%,#fbdf93 100%); /* Opera 11.10+ */
+        background: -ms-linear-gradient(top,  #fceabb 0%,#fccd4d 50%,#f8b500 51%,#fbdf93 100%); /* IE10+ */
+        background: linear-gradient(to bottom,  #fceabb 0%,#fccd4d 50%,#f8b500 51%,#fbdf93 100%); /* W3C */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fceabb', endColorstr='#fbdf93',GradientType=0 ); /* IE6-9 */
+        z-index: 2;
+        position: relative;
+        width: 0;
+    }
+    .oneRowDetail{
+
+    }
+    .oneRowDetail .percentValue{
+        font-weight: bold;
+        font-size: 1.2em;
+        margin-left: 5%;
+    }
+    .componentContainer .oneRowDetail label{
+        margin-left: 5%;
+        display: block;
+        float: left;
+        color: #4A6204;
+        background: transparent;
+        font-style: italic;
+        width: 15% !important;
+    }
+    .componentContainer .oneRowDetail .value{
+        float: left;
+        background: transparent;
+        display: block;
+        margin-left: 3%;
+        width: 70%;
+    }
+</apex:page>

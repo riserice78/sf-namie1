@@ -1,0 +1,39 @@
+<apex:page contentType="text/css" standardStylesheets="false">
+    #mainContainer{
+        width: 90%;
+        margin: 0 auto;
+    }
+    .jobBlock {
+        border-top: 4px solid #ffd300;
+    }
+    .componentContainer .detailLine label{
+
+    }
+    .componentContainer .detailLine .value{
+        background: #FFF1AD;
+    }
+    .applyForJob{
+        background: #ffd300;
+        box-shadow: 0 2px #a68900;
+        color: #333;
+    }
+    .viewJob{
+        background: #bfa730;
+        box-shadow: 0 2px #a68900;
+        color: #eee;
+    }
+    .componentContainer .contents .detailBlock{
+        width: 100%;
+        float: none;
+    }
+    .componentContainer .contents img{
+        float: left;
+        width: 90px;
+        margin-right: 10px;
+    }
+    .componentContainer .contents .accountName{
+        display: block;
+        float: left;
+        margin-top: 10px;
+    }
+</apex:page>

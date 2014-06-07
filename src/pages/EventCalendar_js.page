@@ -1,0 +1,135 @@
+<apex:page controller="EventController" standardStylesheets="false">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    function initEventListener(){
+        $('.joinEvent').on('click', function(){
+            var applicantObj = {
+                ParticipantUser__c : "{!$User.Id}",
+                Event__c : $(this).closest('.componentContainer').attr('data-id')
+            };
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.EventController.joinEvent}', applicantObj,
+                function(result){
+                    if(result){
+                        createMessage($('#mainContainer'), '参加手続きを完了しました。');                        
+                        loadDayEventList(new Date($('#currentEventDay').val()));
+                    }else{
+                        createMessage($('#mainContainer'), '参加手続きに問題が発生しましたので、もう一度試してください。');
+                    }
+                });
+        });
+        $('.viewEvent').on('click', function(){
+            sforce.one.navigateToSObject($(this).closest('.componentContainer').attr('data-id'));
+        });
+    }
+
+    function setVolunteerProgressBar(){
+        $.each($('.barValue'), function(){
+            var width = parseInt($(this).attr('data-current')) / parseInt($(this).attr('data-max')) * 100;
+            $(this).css('width', width+'%');
+            $(this).closest('.oneRowDetail').find('.percentValue').text(width+'%');
+        });
+    }
+
+    function createDayEventBlockForList(obj){
+        return '<div class="eventBlock componentContainer" data-id="' + obj.Id + '">'
+                + '<h1 class="title">' + obj.Name + '</h1>'
+                + '<div class="actions">'
+                    + '<span class="joinEvent actionButton">参加する</span>'
+                    + '<span class="viewEvent actionButton">もっと見る</span>'
+                + '</div>'
+                + '<div class="contents">'
+                    + '<img src="' + obj.MainImageURL__c + '" />'
+                    + '<span class="detailBlock">'
+                        + '<span class="detailLine"><label>概要</label><span class="value">' + obj.Summary__c + (obj.IsVolunteer__c ? '<br />※このイベントはボランティア活動として登録されています。' : '') + '</span></span>'
+                        + '<span class="detailLine"><label>イベント日時</label><span class="value">' + normalizeDate(obj.ActivityDateTime__c) + '</span></span>'
+                        + '<span class="detailLine"><label>場所</label><span class="value">' + obj.Location__r.Name + '</span></span>'
+                        + '<span class="detailLine"><label>応募人数</label><span class="value">' + obj.MaxNumberOfParticipants__c + '</span></span>'
+                        + '<span class="detailLine"><label>参加者数</label><span class="value">' + obj.CurrentNumberOfParticipants__c + '</span></span>'
+                        + '<span class="detailLine oneRowDetail">'
+                            + '<label>進捗<span class="percentValue"></span></label>'
+                            + '<span class="value">'
+                                + '<span class="barCol"><span class="barValue" data-current="' + obj.CurrentNumberOfParticipants__c + '" data-max="' + obj.MaxNumberOfParticipants__c + '"></span></span>'
+                            + '</span>'
+                            + '<div class="clear"></div>'
+                        + '</span>'
+                    + '</span>'
+                + '</div>'
+
+                + '<div class="clear"></div>'
+            + '</div>';
+    }
+    
+    function loadDayEventList(eventDay){
+        Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.EventController.queryEventOnDay}', formatDate(eventDay),
+            function(result){
+                if(result){
+                    var appendString = '';
+                    $('#eventList').empty();
+                    $.each(result, function(){
+                        appendString = appendString + createDayEventBlockForList(this);
+                    }); 
+                    $('#eventList').append(appendString);
+                    initEventListener();
+                    setVolunteerProgressBar();
+                }else{
+                    createMessage($('#mainContainer'), 'イベント取得に問題が発生しましたので、もう一度試してください。');
+                }
+            });    
+    }
+
+    function initDayListener(){
+        $('.dayContainer').on('click', function(){
+            var eventDay = new Date($(this).attr('data-date'));
+            $('#currentEventDay').val(eventDay);
+            loadDayEventList(eventDay);
+        });
+    }
+
+    function createDayEventBlock(objList){
+        var eventBlock = '';
+        if(objList){
+            $.each(objList, function(){
+                eventBlock = eventBlock + '<span class="eventItem">' + this + '</span>';
+            });        
+        }
+        return eventBlock;
+    }
+
+    function createDayBlock(obj){
+        return '<td class="dayContainer ' + (!obj.isActive ? 'inactive' : '') + '" data-date="' + obj.actualDate + '">'
+                + '<div class="dayValue">' + obj.day + '</div>'
+                + '<div class="dayEventList">'
+                    + createDayEventBlock(obj.eventList)
+                + '</div>'
+             + '</td>';
+    }
+    
+    function initEventCalendar() {
+        var today = new Date();
+        Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.EventController.queryCalendar}', formatDate(today),
+            function(result, event){
+                if (event.status) {
+                    var appendString = '';
+                    $.each(result, function(){
+                        var week = this;
+                        appendString = appendString + '<tr class="weekContainer">';
+                        $.each(week.dayList, function(){
+                            var day = this;
+                            appendString = appendString + createDayBlock(day);
+                        });
+                        appendString = appendString + '</tr>';
+                    }); 
+                    $('#eventCalendar').append(appendString);
+                    initDayListener();
+                }else{
+                    createMessage($('#mainContainer'), event.Message);
+                }
+            }, {escape: true}
+        );
+    }
+
+    $(document).ready(function(){
+        initEventCalendar();
+    });
+</script>
+</apex:page>

@@ -1,0 +1,42 @@
+<apex:page showHeader="false" standardStylesheets="false">
+<apex:stylesheet value="{!$Page.Main_css}"/>
+<apex:stylesheet value="{!$Page.Alert_css}"/>
+<apex:stylesheet value="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css"/>
+<apex:include pageName="Alert_js"/>
+<apex:include pageName="Util_js"/>
+
+<div id="mainContainer">
+    <div class="message"></div>
+    <input type="hidden" id="currentLatitude" value="" />
+    <input type="hidden" id="currentLongitude" value="" />
+    <div id="alertList" class="alertContainer">
+    </div>
+    <div class="mapContainer">
+        <div id="evacuationMap"></div>
+    </div>
+</div>
+<div class="overlay hide" id="helpDialog">
+    <div class="dialog">
+        <h1 class="title">救助要請を送信<i class="fa fa-times closeDialog"></i></h1>
+        <span class="contents">
+            <label>現在地に何人いますか？</label><input type="number" class="numOfPeople" value="1" min="1"/>
+            <br />
+            <label>コメント</label><textarea class="comment"></textarea>
+            <br />
+            <span class="sendHelp sendButton"><i class="fa fa-paper-plane"></i>送信</span>
+            <div class="message"></div>
+        </span>
+    </div>
+</div>
+<div class="overlay hide" id="safeDialog">
+    <div class="dialog">
+        <h1 class="title">安否連絡を送信<i class="fa fa-times closeDialog"></i></h1>
+        <span class="contents">
+            <label>コメント</label><textarea class="comment"></textarea>
+            <br />
+            <span class="sendSafety sendButton"><i class="fa fa-paper-plane"></i>送信</span>
+            <div class="message"></div>
+        </span>
+    </div>
+</div>
+</apex:page>

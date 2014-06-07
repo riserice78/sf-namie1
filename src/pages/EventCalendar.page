@@ -1,0 +1,18 @@
+<apex:page showHeader="false" standardStylesheets="false">
+<apex:stylesheet value="{!$Page.Main_css}"/>
+<apex:stylesheet value="{!$Page.EventCalendar_css}"/>
+<apex:stylesheet value="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css"/>
+<apex:include pageName="EventCalendar_js"/>
+<apex:include pageName="Util_js"/>
+
+<div id="mainContainer">
+    <div class="message"></div>
+    <table id="eventCalendar" class="calendarContainer">
+        <tr><th><span>日</span></th><th><span>月</span></th><th><span>火</span></th>
+            <th><span>水</span></th><th><span>木</span></th><th><span>金</span></th><th><span>土</span></th></tr>
+    </table>
+    <input type="hidden" id="currentEventDay" value=""/>
+    <div id="eventList" class="eventContainer"></div>
+</div>
+
+</apex:page>

@@ -1,0 +1,63 @@
+<apex:page controller="JobController" showHeader="false" standardStylesheets="false">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    function initJobActionListeners(){
+        $('.applyForJob').on('click', function(){
+            var applicantObj = {
+                Applicant__c : "{!$User.Id}",
+                JobOpening__c : $(this).closest('.componentContainer').attr('data-id')
+            };
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.JobController.applyForJob}', applicantObj,
+                function(result){
+                    if(result){
+                        createMessage($('#mainContainer'), '応募を受付しました。');
+                    }else{
+                        createMessage($('#mainContainer'), '受付に問題が発生しましたので、もう一度試してください。');
+                    }
+                });
+        });
+        $('.viewJob').on('click', function(){
+            sforce.one.navigateToSObject($(this).closest('.componentContainer').attr('data-id'));
+        });
+    }
+
+    function createJobBlock(obj){
+        return '<div class="jobBlock componentContainer" data-id="' + obj.Id + '">'
+                + '<h1 class="title">' + obj.Name + '</h1>'
+                + '<div class="contents">'
+                    + '<span class="detailBlock">'
+                        + '<span class="detailLine"><label>会社</label><span class="value"><img src="' + obj.Account__r.LogoURL__c+ '" /><span class="accountName">' + obj.Account__r.Name + '</span></span></span>'
+                        + '<span class="detailLine"><label>概要</label><span class="value">' + obj.Summary__c + '</span></span>'
+                        + '<span class="detailLine"><label>最終更新日</label><span class="value">' + normalizeDate(obj.LastModifiedDate) + '</span></span>'
+                    + '</span>'
+                + '</div>'
+                + '<div class="actions">'
+                    + '<span class="applyForJob actionButton">応募する</span>'
+                    + '<span class="viewJob actionButton">もっと見る</span>'
+                + '</div>'
+                + '<div class="clear"></div>'
+            + '</div>';
+    }
+    
+    function initJobList() {
+        Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.JobController.getJobOpeningsList}', 
+            function(result, event){
+                if (event.status) {
+                    var appendString = '';
+                    $.each(result, function(){
+                        appendString = appendString + createJobBlock(this);
+                    }); 
+                    $('#jobOpeningsList').append(appendString);
+                    initJobActionListeners();
+                }else{
+                    createMessage($('#mainContainer'), event.Message);
+                }
+            }, {escape: true}
+        );
+    }
+
+    $(document).ready(function(){
+        initJobList();
+    });
+</script>
+</apex:page>

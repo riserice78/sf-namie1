@@ -1,0 +1,45 @@
+<apex:page showHeader="false" standardStylesheets="false" controller="NewsController">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    function initNewsActionListeners(){
+        $('.viewNews').on('click', function(){
+            sforce.one.navigateToSObject($(this).closest('.componentContainer').attr('data-id'));
+        });
+    }
+
+    function createNewsBlock(obj){
+        return '<div class="newsBlock componentContainer" data-id="' + obj.Id + '">'
+                + '<h1 class="title">' + obj.Name + '</h1>'
+                + '<div class="contents">'
+                    + '<span class="detailLine ">' + obj.Introduction__c + '</span>'
+                    + '<span class="detailLine ">最終更新日:' + normalizeDate(obj.LastModifiedDate) + '</span>'
+                + '</div>'
+                + '<div class="actions">'
+                    + '<span class="viewNews actionButton">もっと見る</span>'
+                + '</div>'
+                + '<div class="clear"></div>'
+            + '</div>';
+    }
+
+    function initNewsList() {
+        Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.NewsController.getNewsList}', 
+            function(result, event){
+                if (event.status) {
+                    var appendString = '';
+                    $.each(result, function(){
+                        appendString = appendString + createNewsBlock(this);
+                    }); 
+                    $('#newsList').append(appendString);
+                    initNewsActionListeners();
+                }else{
+                    createMessage($('#mainContainer'), event.Message);
+                }
+            }, {escape: true}
+        );
+    }
+
+    $(document).ready(function(){
+        initNewsList();
+    });
+</script>
+</apex:page>

@@ -1,0 +1,82 @@
+<apex:page controller="EventController" showHeader="false" standardStylesheets="false">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    function initVolunteerListeners(){
+        $('.joinVolunteer').on('click', function(){
+            var applicantObj = {
+                ParticipantUser__c : "{!$User.Id}",
+                Event__c : $(this).closest('.componentContainer').attr('data-id')
+            };
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.EventController.joinEvent}', applicantObj,
+                function(result){
+                    if(result){
+                        createMessage($('#mainContainer'), '参加手続きを完了しました。');
+                    }else{
+                        createMessage($('#mainContainer'), '参加手続きに問題が発生しましたので、もう一度試してください。');
+                    }
+                });
+        });
+        $('.viewVolunteer').on('click', function(){
+            sforce.one.navigateToSObject($(this).closest('.componentContainer').attr('data-id'));
+        });
+    }
+
+    function setVolunteerProgressBar(){
+        $.each($('.barValue'), function(){
+            var width = parseInt($(this).attr('data-current')) / parseInt($(this).attr('data-max')) * 100;
+            $(this).css('width', width+'%');
+            $(this).closest('.oneRowDetail').find('.percentValue').text(width+'%');
+        });
+    }
+
+    function createVolunteerBlock(obj){
+        return '<div class="volunteerBlock componentContainer" data-id="' + obj.Id + '">'
+                + '<h1 class="title">' + obj.Name + '</h1>'
+                + '<div class="contents">'
+                    + '<img src="' + obj.MainImageURL__c + '" />'
+                    + '<span class="detailBlock">'
+                        + '<span class="detailLine"><label>概要</label><span class="value">' + obj.Summary__c + '</span></span>'
+                        + '<span class="detailLine"><label>ボランティア日時</label><span class="value">' + normalizeDate(obj.ActivityDateTime__c) + '</span></span>'
+                        + '<span class="detailLine"><label>場所</label><span class="value">' + obj.Location__r.Name + '</span></span>'
+                        + '<span class="detailLine"><label>応募人数</label><span class="value">' + obj.MaxNumberOfParticipants__c + '</span></span>'
+                        + '<span class="detailLine"><label>参加者数</label><span class="value">' + obj.CurrentNumberOfParticipants__c + '</span></span>'
+                        + '<span class="detailLine oneRowDetail">'
+                            + '<label>進捗<span class="percentValue"></span></label>'
+                            + '<span class="value">'
+                                + '<span class="barCol"><span class="barValue" data-current="' + obj.CurrentNumberOfParticipants__c + '" data-max="' + obj.MaxNumberOfParticipants__c + '"></span></span>'
+                            + '</span>'
+                            + '<div class="clear"></div>'
+                        + '</span>'
+                    + '</span>'
+                + '</div>'
+                + '<div class="actions">'
+                    + '<span class="joinVolunteer actionButton">参加する</span>'
+                    + '<span class="viewVolunteer actionButton">もっと見る</span>'
+                + '</div>'
+                + '<div class="clear"></div>'
+            + '</div>';
+    }
+    
+    function initVolunteerList() {
+        Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.EventController.getUpcomingVolunteerList}', 
+            function(result, event){
+                if (event.status) {
+                    var appendString = '';
+                    $.each(result, function(){
+                        appendString = appendString + createVolunteerBlock(this);
+                    }); 
+                    $('#upcomingVolunteerList').append(appendString);
+                    initVolunteerListeners();
+                    setVolunteerProgressBar();
+                }else{
+                    createMessage($('#mainContainer'), event.Message);
+                }
+            }, {escape: true}
+        );
+    }
+
+    $(document).ready(function(){
+        initVolunteerList();
+    });
+</script>
+</apex:page>
